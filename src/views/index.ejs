@@ -1,24 +1,45 @@
 <%- include('partials/header') %>
 
 <section class="hero">
-    <h2>Connect with Developers 🚀</h2>
-    <p>Build your network & grow together</p>
-</section>
+    <div class="hero-tag">✨ Open Source Community</div>
+    <h1>Connect with <span class="accent">Developers</span></h1>
+    <p>A professional network for developers. Share your projects, discuss ideas, and grow your career with top talent from around the world.</p>
+    
+    <div class="hero-cta" id="hero-guest">
+        <a href="/signup" class="btn btn-primary">Join for free</a>
+        <a href="/login" class="btn btn-outline">Sign in</a>
+    </div>
 
-<section class="developers">
-    <h2>Top Developers</h2>
-
-    <div class="card-container">
-    <% users.forEach(user => { %>
-        <div class="card">
-            <img src="https://i.pravatar.cc/100?u=<%= user.name %>">
-            <h3><%= user.name %></h3>
-            <p><%= user.role %></p>
-        </div>
-    <% }) %>
-</div>
-
+    <div class="hero-cta" id="hero-auth" style="display:none;">
+        <a href="/dashboard" class="btn btn-primary">Go to Dashboard</a>
     </div>
 </section>
+
+<hr class="hero-divider">
+
+<div class="features-strip">
+    <div class="feature-item">
+        <div class="fi-icon">📝</div>
+        <h3>Share Knowledge</h3>
+        <p>Post updates and tutorials.</p>
+    </div>
+    <div class="feature-item">
+        <div class="fi-icon">🤝</div>
+        <h3>Build Network</h3>
+        <p>Connect with peers.</p>
+    </div>
+    <div class="feature-item">
+        <div class="fi-icon">🚀</div>
+        <h3>Grow Career</h3>
+        <p>Discover new opportunities.</p>
+    </div>
+</div>
+
+<script>
+    if (localStorage.getItem('devconnect_token')) {
+        document.getElementById('hero-guest').style.display = 'none';
+        document.getElementById('hero-auth').style.display = 'flex';
+    }
+</script>
 
 <%- include('partials/footer') %>

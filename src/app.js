@@ -3,6 +3,9 @@ const path = require('path');
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Middleware
 app.use(express.json());
 
@@ -42,5 +45,17 @@ app.get('/login', (req, res) => {
 app.get('/signup', (req, res) => {
     res.render('signup');
 });
+
+app.get('/dashboard', (req, res) => {
+    res.render('dashboard');
+});
+
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+
+const postRoutes = require('./routes/postRoutes');
+app.use('/api/posts', postRoutes);
+
+app.use(express.urlencoded({ extended: true }));
 
 module.exports = app;

@@ -2,18 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevConnect</title>
     <link rel="stylesheet" href="/style.css">
-    <a href="/signup">Signup</a>
 </head>
 <body>
 
 <nav class="navbar">
-    <h1>DevConnect</h1>
-    <div>
+    <a href="/" class="nav-brand">DevConnect</a>
+    <div class="nav-links">
         <a href="/">Home</a>
         <a href="/developers">Developers</a>
         <a href="/posts">Posts</a>
-        <a href="/login">Login</a>
+
+        <!-- Guest -->
+        <div id="nav-guest" style="display:flex; gap:12px;">
+            <a href="/login" class="btn btn-outline">Login</a>
+            <a href="/signup" class="btn btn-primary">Sign Up</a>
+        </div>
+
+        <!-- Auth -->
+        <div id="nav-auth" style="display:none; align-items:center; gap:16px;">
+            <span id="nav-username" class="nav-user-badge"></span>
+            <a href="/dashboard" class="btn btn-outline">Dashboard</a>
+            <button onclick="logout()" class="btn-logout">Logout</button>
+        </div>
     </div>
 </nav>
+
+<script>
+    const token = localStorage.getItem('devconnect_token');
+    const userName = localStorage.getItem('devconnect_username');
+
+    if (token) {
+        document.getElementById('nav-guest').style.display = 'none';
+        document.getElementById('nav-auth').style.display = 'flex';
+        if (userName) document.getElementById('nav-username').textContent = '@' + userName;
+    }
+
+    function logout() {
+        localStorage.removeItem('devconnect_token');
+        localStorage.removeItem('devconnect_username');
+        window.location.href = '/';
+    }
+</script>

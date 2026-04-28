@@ -1,0 +1,140 @@
+<%- include('partials/header') %>
+
+<div class="dash-wrap">
+    
+    <div class="dash-topbar">
+        <div class="dash-welcome">
+            <h2 id="dash-title">Dashboard</h2>
+            <p>Here's what's happening in your network.</p>
+        </div>
+        <div class="dash-stats">
+            <div class="dstat">
+                <div class="dstat-n" id="stat-posts">0</div>
+                <div class="dstat-l">Total Posts</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-grid">
+        <!-- Main Feed Col -->
+        <div class="dash-main">
+            
+            <div class="compose-card">
+                <div class="compose-row">
+                    <div class="c-avatar" id="c-avatar">A</div>
+                    <textarea id="post-input" placeholder="What are you working on?" rows="2"></textarea>
+                </div>
+                <div class="compose-footer">
+                    <div class="compose-hint">Markdown is not supported yet.</div>
+                    <div id="post-notify" class="post-notify">Posted!</div>
+                    <button class="btn btn-primary" id="btn-post">Post</button>
+                </div>
+            </div>
+
+            <div class="feed" id="feed-container">
+                <div class="feed-empty">Loading feed...</div>
+            </div>
+
+        </div>
+
+        <!-- Sidebar Col -->
+        <div class="dash-sidebar">
+            <div class="widget">
+                <div class="widget-head">Your Profile</div>
+                <div class="widget-body">
+                    <div class="profile-widget-info">
+                        <div class="pw-avatar" id="w-avatar">A</div>
+                        <div>
+                            <div class="pw-name" id="w-name">Developer</div>
+                            <div class="pw-role">Software Engineer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-head">Quick Links</div>
+                <div class="widget-body" style="padding: 8px 16px;">
+                    <a href="#" class="quick-link"><span class="ql-icon">🔥</span> Trending Repos</a>
+                    <a href="#" class="quick-link"><span class="ql-icon">👥</span> Top Developers</a>
+                    <a href="#" class="quick-link"><span class="ql-icon">⚙️</span> Settings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const token = localStorage.getItem('devconnect_token');
+    if (!token) window.location.href = '/login';
+
+    const username = localStorage.getItem('devconnect_username') || 'Dev';
+    const initial = username.charAt(0).toUpperCase();
+    
+    document.getElementById('dash-title').textContent = 'Welcome, ' + username;
+    document.getElementById('c-avatar').textContent = initial;
+    document.getElementById('w-avatar').textContent = initial;
+    document.getElementById('w-name').textContent = username;
+
+    async function fetchPosts() {
+        const feed = document.getElementById('feed-container');
+        try {
+            const res = await fetch('/api/posts');
+            const data = await res.json();
+            
+            if (!data.success || !data.posts) throw new Error();
+            
+            document.getElementById('stat-posts').textContent = data.posts.length;
+
+            if (data.posts.length === 0) {
+                feed.innerHTML = `<div class="feed-empty">No posts yet. Start the conversation!</div>`;
+                return;
+            }
+
+            feed.innerHTML = data.posts.map(p => `
+                <div class="post-card">
+                    <div class="post-meta">
+                        <div class="post-avi">${(p.author||'U')[0].toUpperCase()}</div>
+                        <div class="post-author">${p.author||'Unknown'}</div>
+                        <div class="post-time">${new Date(p.createdAt).toLocaleString()}</div>
+                    </div>
+                    <div class="post-body">${(p.content || '').replace(/\n/g, '<br>')}</div>
+                    <div class="post-actions">
+                        <button class="pact">Reply</button>
+                        <button class="pact">Star</button>
+                    </div>
+                </div>
+            `).join('');
+            
+        } catch(e) {
+            feed.innerHTML = `<div class="feed-empty">Error loading posts.</div>`;
+        }
+    }
+
+    document.getElementById('btn-post').addEventListener('click', async () => {
+        const content = document.getElementById('post-input').value.trim();
+        if(!content) return;
+
+        try {
+            const res = await fetch('/api/posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content, author: username })
+            });
+            if(res.ok) {
+                document.getElementById('post-input').value = '';
+                const notif = document.getElementById('post-notify');
+                notif.style.display = 'block';
+                setTimeout(() => notif.style.display = 'none', 2000);
+                fetchPosts();
+            }
+        } catch(e) {
+            alert('Failed to post');
+        }
+    });
+
+    fetchPosts();
+</script>
+
+<%- include('partials/footer') %>
