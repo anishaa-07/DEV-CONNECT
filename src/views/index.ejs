@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+    <h2>Connect with Developers 🚀</h2>
+    <p>Build your network & grow together</p>
+</section>
+
+<section class="developers">
+    <h2>Top Developers</h2>
+
+    <div class="card-container">
+    <% users.forEach(user => { %>
+        <div class="card">
+            <img src="https://i.pravatar.cc/100?u=<%= user.name %>">
+            <h3><%= user.name %></h3>
+            <p><%= user.role %></p>
+        </div>
+    <% }) %>
+</div>
+
+    </div>
+</section>
+
+<%- include('partials/footer') %>
